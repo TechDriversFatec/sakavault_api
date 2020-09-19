@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :sakavault, SakaVault.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "sakavault_dev",
-  hostname: "localhost",
+  username: {:system, "POSTGRES_USERNAME", "postgres"},
+  password: {:system, "POSTGRES_PASSWORD", "postgres"},
+  hostname: {:system, "POSTGRES_HOSTNAME", "postgres"},
+  database: {:system, "POSTGRES_DATABASE", "sakavault_dev"},
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

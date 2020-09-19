@@ -12,6 +12,16 @@ config :sakavault,
   ecto_repos: [SakaVault.Repo],
   generators: [binary_id: true]
 
+config :sakavault, SakaVault.Repo,
+  start_apps_before_migration: [:ssl, :logger, :ecto, :ecto_sql],
+  migration_primary_key: [
+    name: :id,
+    type: :binary_id,
+    autogenerate: false,
+    read_after_writes: true,
+    default: {:fragment, "uuid_generate_v4()"}
+  ]
+
 # Configures the endpoint
 config :sakavault, SakaVaultWeb.Endpoint,
   url: [host: "localhost"],

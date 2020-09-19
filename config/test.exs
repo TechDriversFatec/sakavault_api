@@ -6,10 +6,11 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :sakavault, SakaVault.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "sakavault_test#{System.get_env("MIX_TEST_PARTITION")}",
-  hostname: "localhost",
+  username: {:system, "POSTGRES_USERNAME", "postgres"},
+  password: {:system, "POSTGRES_PASSWORD", "postgres"},
+  hostname: {:system, "POSTGRES_HOSTNAME", "postgres"},
+  database: {:system, "POSTGRES_DATABASE", "sakavault_test"},
+  ownership_timeout: 999_999,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
