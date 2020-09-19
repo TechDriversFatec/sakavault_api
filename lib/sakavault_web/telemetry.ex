@@ -38,7 +38,7 @@ defmodule SakaVaultWeb.Telemetry do
       summary("sakavault.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
-      ), 
+      ),
       summary("sakavault.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
@@ -49,7 +49,8 @@ defmodule SakaVaultWeb.Telemetry do
       ),
       summary("sakavault.repo.query.idle_time",
         unit: {:native, :millisecond},
-        description: "The time the connection spent waiting before being checked out for the query"
+        description:
+          "The time the connection spent waiting before being checked out for the query"
       ),
 
       # VM Metrics
