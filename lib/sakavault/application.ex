@@ -6,6 +6,9 @@ defmodule SakaVault.Application do
   use Application
 
   def start(_type, _args) do
+    # Replace Application environment with resolved values
+    Confex.resolve_env!(:sakavault)
+
     children = [
       # Start the Ecto repository
       SakaVault.Repo,
