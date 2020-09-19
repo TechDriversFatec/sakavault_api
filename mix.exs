@@ -62,7 +62,10 @@ defmodule SakaVault.MixProject do
       # Development and testing
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.10", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.13", only: [:dev, :test], runtime: false}
+      {:excoveralls, "~> 0.13", only: [:dev, :test], runtime: false},
+
+      # Production releases
+      {:distillery, "~> 2.1", runtime: false}
     ]
   end
 
