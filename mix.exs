@@ -50,7 +50,12 @@ defmodule SakaVault.MixProject do
 
       # Metrics
       {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"}
+      {:telemetry_poller, "~> 0.4"},
+
+      # Development and testing
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.10", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -65,7 +70,20 @@ defmodule SakaVault.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      ci: [
+        "format --check-formatted",
+        "clean",
+        "compile --warnings-as-errors --all-warnings",
+        "fast_ci"
+      ],
+      fast_ci: [
+        "ecto.create",
+        "ecto.migrate",
+        "credo --strict",
+        "sobelow -i Config.HTTPS --skip --verbose --exit",
+        "coveralls.html --raise --slowest 10"
+      ]
     ]
   end
 end
