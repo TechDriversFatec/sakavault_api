@@ -15,10 +15,10 @@ defmodule SakaVaultWeb.ChannelCase do
   this option is not recommended for other databases.
   """
 
-  use ExUnit.CaseTemplate
-
-  using do
+  defmacro __using__(opts) do
     quote do
+      use SakaVault.BaseCase, unquote(opts)
+
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import SakaVaultWeb.ChannelCase
@@ -26,11 +26,5 @@ defmodule SakaVaultWeb.ChannelCase do
       # The default endpoint for testing
       @endpoint SakaVaultWeb.Endpoint
     end
-  end
-
-  setup tags do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(SakaVault.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
-    :ok
   end
 end
