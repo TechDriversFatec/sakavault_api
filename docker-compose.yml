@@ -31,3 +31,20 @@ services:
       - api_build:/root/_build
     depends_on:
       - postgres
+
+  # api-prod:
+  #   tty: true
+  #   build:
+  #     context: api/
+  #     args:
+  #       COOKIE: "sakavault"
+  #   environment:
+  #     PORT: 4000
+  #     SECRET_KEY_BASE: "P8dmUyCYuLivfa9YgkNzNJmHfNywDV9UgJavVKwDbcpRdiqUu/wvipb2sAkbtE0u"
+  #     DATABASE_URL: "postgresql://postgres:postgres@postgres/sakavault"
+  #     DATABASE_SSL: "disable"
+  #   # command: "migrate_database"
+  #   ports:
+  #     - 4000:4000
+  #   depends_on:
+  #     - postgres
