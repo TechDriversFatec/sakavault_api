@@ -29,5 +29,7 @@ erl_crash.dump
 
 /config/*.secret.exs
 
+*.env
+
 .DS_Store
 .elixir_ls/
