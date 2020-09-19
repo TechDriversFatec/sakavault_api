@@ -24,8 +24,10 @@ config :sakavault, SakaVaultWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+database_ssl = {:system, "DATABASE_SSL", nil} == nil
+
 config :sakavault, SakaVault.Repo,
-  ssl: true,
+  ssl: database_ssl,
   url: {:system, "DATABASE_URL"},
   pool_size: {:system, "POOL_SIZE", 10}
 
