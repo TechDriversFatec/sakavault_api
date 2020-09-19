@@ -24,6 +24,11 @@ config :sakavault, SakaVaultWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :sakavault, SakaVault.Repo,
+  ssl: true,
+  url: {:system, "DATABASE_URL"},
+  pool_size: {:system, "POOL_SIZE", 10)}
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
