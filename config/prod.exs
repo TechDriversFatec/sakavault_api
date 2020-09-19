@@ -27,7 +27,7 @@ config :logger, level: :info
 config :sakavault, SakaVault.Repo,
   ssl: true,
   url: {:system, "DATABASE_URL"},
-  pool_size: {:system, "POOL_SIZE", 10)}
+  pool_size: {:system, "POOL_SIZE", 10}
 
 # ## SSL Support
 #
