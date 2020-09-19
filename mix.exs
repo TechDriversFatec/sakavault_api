@@ -33,14 +33,24 @@ defmodule SakaVault.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # Environment
+      {:confex, "~> 3.4.0"},
+
+      # General
+      {:jason, "~> 1.0"},
+
+      # Phoenix
       {:phoenix, "~> 1.5.0"},
+
+      # Ecto
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4.4"},
       {:postgrex, ">= 0.0.0"},
+      {:plug_cowboy, "~> 2.0"},
+
+      # Metrics
       {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:telemetry_poller, "~> 0.4"}
     ]
   end
 
