@@ -32,6 +32,7 @@ defmodule SakaVault.MixProject do
   end
 
   # Specifies which paths to compile per environment.
+  defp elixirc_paths(:dev), do: ["lib", "test/support/factories.ex"]
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
@@ -66,6 +67,8 @@ defmodule SakaVault.MixProject do
       {:telemetry_poller, "~> 0.4"},
 
       # Development and testing
+      {:faker, "~> 0.15", only: [:dev, :test]},
+      {:ex_machina, "~> 2.4", only: [:dev, :test]},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.10", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.13", only: [:dev, :test], runtime: false},
