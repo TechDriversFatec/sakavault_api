@@ -46,6 +46,9 @@ defmodule SakaVault.MixProject do
       # General
       {:jason, "~> 1.0"},
 
+      # Securely hashing & verifying passwords
+      {:argon2_elixir, "~> 1.3"},
+
       # Phoenix
       {:phoenix, "~> 1.5.0"},
 
