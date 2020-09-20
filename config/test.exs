@@ -9,7 +9,7 @@ config :sakavault, SakaVault.Repo,
   username: {:system, "POSTGRES_USERNAME", "postgres"},
   password: {:system, "POSTGRES_PASSWORD", "postgres"},
   hostname: {:system, "POSTGRES_HOSTNAME", "postgres"},
-  database: {:system, "POSTGRES_DATABASE", "sakavault_test"},
+  database: "sakavault_test",
   ownership_timeout: 999_999,
   pool: Ecto.Adapters.SQL.Sandbox
 
