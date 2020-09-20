@@ -14,6 +14,8 @@ defmodule SakaVault.BaseCase do
         Changeset
       }
 
+      import SakaVault.Support.Factories
+
       setup tags do
         pid = Sandbox.start_owner!(SakaVault.Repo, shared: not tags[:async])
         on_exit(fn -> Sandbox.stop_owner(pid) end)
