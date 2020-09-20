@@ -7,5 +7,8 @@ defmodule SakaVaultWeb.Router do
 
   scope "/api", SakaVaultWeb do
     pipe_through :api
+
+    post "/login", AuthController, :login
+    post "/register", AuthController, :register
   end
 end
