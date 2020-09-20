@@ -1,4 +1,6 @@
 defmodule SakaVault.Guardian do
+  @moduledoc false
+
   use Guardian, otp_app: :sakavault
 
   # You can use any value for the subject of your token but
