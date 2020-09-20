@@ -24,6 +24,8 @@ defmodule SakaVaultWeb.ConnCase do
       import Phoenix.ConnTest
       import SakaVaultWeb.ConnCase
 
+      import SakaVault.Support.ConnHelpers
+
       alias SakaVaultWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
