@@ -38,6 +38,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :sakavault, SakaVault.Guardian,
+  issuer: "sakavault",
+  secret_key: {:system, "GUARDIAN_SECRET_KEY"}
+
 config :sakavault, SakaVault.EncryptionKeys, keys: System.get_env("ENCRYPTION_KEYS")
 
 # Import environment specific config. This must remain at the bottom
