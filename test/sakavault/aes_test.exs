@@ -20,7 +20,7 @@ defmodule SakaVault.AESTest do
 
   describe "decrypt/1" do
     test "decrypt cipher text that was encrypted with default key" do
-      plain_text = "hello" |> AES.encrypt |> AES.decrypt()
+      plain_text = "hello" |> AES.encrypt() |> AES.decrypt()
 
       assert plain_text == "hello"
     end
