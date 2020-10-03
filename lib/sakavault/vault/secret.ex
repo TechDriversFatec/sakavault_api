@@ -8,6 +8,7 @@ defmodule SakaVault.Vault.Secret do
 
   schema "secrets" do
     field :name, Encrypted
+    field :notes, Encrypted
     field :username, Encrypted
     field :password, Encrypted
 
@@ -18,7 +19,7 @@ defmodule SakaVault.Vault.Secret do
 
   def changeset(%__MODULE__{} = secret, params) do
     secret
-    |> cast(params, [:user_id, :name, :username, :password])
+    |> cast(params, [:user_id, :name, :notes, :username, :password])
     |> validate_required([:user_id, :name, :username, :password])
     |> foreign_key_constraint(:user_id)
   end
