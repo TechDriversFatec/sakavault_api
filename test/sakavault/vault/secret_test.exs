@@ -19,17 +19,17 @@ defmodule SakaVault.Vault.SecretTest do
   describe "changeset validations" do
     test "with valid attributes", %{user: user} do
       assert %{valid?: true} =
-        @valid_attrs
-        |> Map.merge(%{user_id: user.id})
-        |> Secret.changeset()
+               @valid_attrs
+               |> Map.merge(%{user_id: user.id})
+               |> Secret.changeset()
     end
 
     test "with valid attributes and invalid user" do
       assert {:error, %{valid?: false}} =
-        @valid_attrs
-        |> Map.merge(%{user_id: Ecto.UUID.generate()})
-        |> Secret.changeset()
-        |> Repo.insert()
+               @valid_attrs
+               |> Map.merge(%{user_id: Ecto.UUID.generate()})
+               |> Secret.changeset()
+               |> Repo.insert()
     end
 
     test "with invalid attributes", %{user: user} do
@@ -40,35 +40,35 @@ defmodule SakaVault.Vault.SecretTest do
   describe "create" do
     test "with valid attributes", %{user: user} do
       assert {:ok, %Secret{}} =
-        @valid_attrs
-        |> Map.merge(%{user_id: user.id})
-        |> Secret.changeset()
-        |> Repo.insert()
+               @valid_attrs
+               |> Map.merge(%{user_id: user.id})
+               |> Secret.changeset()
+               |> Repo.insert()
     end
 
     test "with invalid attributes", %{user: user} do
       assert {:error, %{valid?: false}} =
-        %{user_id: user.id}
-        |> Secret.changeset()
-        |> Repo.insert()
+               %{user_id: user.id}
+               |> Secret.changeset()
+               |> Repo.insert()
     end
   end
 
   describe "update" do
     test "with valid attributes", %{secret: secret} do
       assert {:ok, secret} =
-        secret
-        |> Secret.changeset(%{name: "JohnDoeBook"})
-        |> Repo.update()
+               secret
+               |> Secret.changeset(%{name: "JohnDoeBook"})
+               |> Repo.update()
 
       assert secret.name == "JohnDoeBook"
     end
 
     test "with invalid attributes", %{secret: secret} do
       assert {:error, %{valid?: false}} =
-        secret
-        |> Secret.changeset(%{name: ""})
-        |> Repo.update()
+               secret
+               |> Secret.changeset(%{name: ""})
+               |> Repo.update()
     end
   end
 end
