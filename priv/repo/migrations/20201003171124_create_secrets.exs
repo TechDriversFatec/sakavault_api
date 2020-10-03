@@ -4,9 +4,10 @@ defmodule SakaVault.Repo.Migrations.CreateSecrets do
   def change do
     create table(:secrets) do
       add :name, :binary, null: false
-      add :notes, :binary, null: false
       add :username, :binary, null: false
       add :password, :binary, null: false
+
+      add :notes, :binary
 
       add :user_id, references(:users, type: :uuid, on_delete: :delete_all), null: false
 
