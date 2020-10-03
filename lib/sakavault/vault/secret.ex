@@ -17,11 +17,9 @@ defmodule SakaVault.Vault.Secret do
   end
 
   def changeset(%__MODULE__{} = secret, params) do
-    user
+    secret
     |> cast(params, [:user_id, :name, :username, :password])
     |> validate_required([:user_id, :name, :username, :password])
-    |> add_email_hash()
-    |> add_password_hash()
     |> foreign_key_constraint(:user_id)
   end
 end
