@@ -199,7 +199,7 @@ defmodule SakaVaultWeb.VaultControllerTest do
       assert %{
                "data" => %{
                  "id" => ^secret_id,
-                 "name" => "anotherWebsite",
+                 "name" => "anotherWebsite"
                }
              } = response
     end
