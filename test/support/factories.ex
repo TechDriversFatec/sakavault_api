@@ -6,7 +6,6 @@ defmodule SakaVault.Support.Factories do
   alias Faker.Person.PtBr, as: Brazilian
 
   alias SakaVault.Accounts.User
-  alias SakaVault.Fields.Hash
 
   def user_factory do
     name = Brazilian.name()
@@ -21,9 +20,9 @@ defmodule SakaVault.Support.Factories do
     %User{
       name: name,
       email: email,
+      email_hash: email,
       password: name,
-      password_hash: name,
-      email_hash: Hash.hash(email)
+      password_hash: name
     }
   end
 end
