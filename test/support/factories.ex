@@ -7,7 +7,6 @@ defmodule SakaVault.Support.Factories do
 
   alias SakaVault.{
     Accounts.User,
-    Fields.Hash,
     Vault.Secret
   }
 
@@ -24,9 +23,9 @@ defmodule SakaVault.Support.Factories do
     %User{
       name: name,
       email: email,
+      email_hash: email,
       password: name,
-      password_hash: name,
-      email_hash: Hash.hash(email)
+      password_hash: name
     }
   end
 
