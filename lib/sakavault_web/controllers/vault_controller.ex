@@ -26,4 +26,10 @@ defmodule SakaVaultWeb.VaultController do
 
     render(conn, "show.json", %{secret: secret})
   end
+
+  def create(conn, params, user) do
+    with {:ok, secret} <- Vault.create(user, params) do
+      render(conn, "show.json", %{secret: secret})
+    end
+  end
 end
