@@ -4,6 +4,7 @@ defmodule SakaVaultWeb.VaultController do
   action_fallback SakaVaultWeb.FallbackController
 
   alias SakaVault.Vault
+  alias SakaVault.Vault.Secret
 
   def action(conn, _) do
     user = Guardian.Plug.current_resource(conn)
@@ -30,6 +31,20 @@ defmodule SakaVaultWeb.VaultController do
   def create(conn, params, user) do
     with {:ok, secret} <- Vault.create(user, params) do
       render(conn, "show.json", %{secret: secret})
+    end
+  end
+
+  def update(conn, params, _user) do
+    with {:ok, %Secret{} = secret} <- Vault.find(params["id"]),
+         {:ok, %Secret{} = secret} <- Vault.update(secret, params) do
+      render(conn, "show.json", %{secret: secret})
+    end
+  end
+
+  def delete(conn, params, _user) do
+    with {:ok, %Secret{} = secret} <- Vault.find(params["id"]),
+         {:ok, %Secret{} = secret} <- Vault.delete(secret) do
+      render(conn, "delete.json", %{secret: secret})
     end
   end
 end

@@ -6,47 +6,45 @@ defmodule SakaVaultWeb.VaultControllerTest do
   setup %{conn: conn} do
     user = insert(:user)
 
-    secret1 = insert(:secret, user: user)
-    secret2 = insert(:secret, user: user)
-
-    secret_params = %{name: "website", username: "john@doe.com", password: "johndoe123"}
+    secret = insert(:secret, user: user)
+    params = %{name: "website", username: "john@doe.com", password: "johndoe123"}
 
     {
       :ok,
       user: user,
-      secret1: secret1,
-      secret2: secret2,
-      secret_params: secret_params,
+      params: params,
+      secret: secret,
       conn: put_req_header(conn, "accept", "application/json")
     }
   end
 
   describe "GET /index" do
     test "returns error if user not authenticated", %{conn: conn} do
-      assert %{"errors" => errors} =
+      assert response =
                conn
                |> get(Routes.vault_path(conn, :index))
                |> json_response(401)
 
-      assert %{"detail" => "unauthenticated"} = errors
+      assert %{"errors" => %{"detail" => "unauthenticated"}} == response
     end
 
     test "returns error if invalid token is used", %{conn: conn} do
-      assert %{"errors" => errors} =
+      assert response =
                conn
                |> put_req_header("authorization", "Bearer invalid_token")
                |> get(Routes.vault_path(conn, :index))
                |> json_response(401)
 
-      assert %{"detail" => "invalid_token"} = errors
+      assert %{"errors" => %{"detail" => "invalid_token"}} == response
     end
 
     test "returns user' secrets", %{
       conn: conn,
       user: user,
-      secret1: %{id: secret1_id},
-      secret2: %{id: secret2_id}
+      secret: %{id: secret1_id}
     } do
+      %{id: secret2_id} = insert(:secret, user: user)
+
       assert response =
                conn
                |> put_authorization(user)
@@ -58,23 +56,23 @@ defmodule SakaVaultWeb.VaultControllerTest do
   end
 
   describe "GET /show" do
-    test "returns error if user not authenticated", %{conn: conn, secret1: secret} do
-      assert %{"errors" => errors} =
+    test "returns error if user not authenticated", %{conn: conn, secret: secret} do
+      assert response =
                conn
                |> get(Routes.vault_path(conn, :show, secret))
                |> json_response(401)
 
-      assert %{"detail" => "unauthenticated"} = errors
+      assert %{"errors" => %{"detail" => "unauthenticated"}} == response
     end
 
-    test "returns error if invalid token is used", %{conn: conn, secret1: secret} do
-      assert %{"errors" => errors} =
+    test "returns error if invalid token is used", %{conn: conn, secret: secret} do
+      assert response =
                conn
                |> put_req_header("authorization", "Bearer invalid_token")
                |> get(Routes.vault_path(conn, :show, secret))
                |> json_response(401)
 
-      assert %{"detail" => "invalid_token"} = errors
+      assert %{"errors" => %{"detail" => "invalid_token"}} == response
     end
 
     test "return invalid secrets", %{conn: conn, user: user} do
@@ -87,7 +85,7 @@ defmodule SakaVaultWeb.VaultControllerTest do
       assert %{"data" => nil} == response
     end
 
-    test "returns user' secrets", %{conn: conn, user: user, secret1: secret} do
+    test "returns user' secrets", %{conn: conn, user: user, secret: %{id: secret_id} = secret} do
       assert response =
                conn
                |> put_authorization(user)
@@ -96,51 +94,54 @@ defmodule SakaVaultWeb.VaultControllerTest do
 
       assert %{
                "data" => %{
-                 "id" => secret.id,
-                 "name" => secret.name,
-                 "username" => secret.username,
-                 "password" => secret.password,
-                 "notes" => secret.notes
+                 "id" => ^secret_id,
+                 "name" => _,
+                 "username" => _,
+                 "password" => _,
+                 "notes" => _,
+                 "inserted_at" => _,
+                 "updated_at" => _
                }
-             } == response
+             } = response
     end
   end
 
   describe "POST /create" do
-    test "returns error if user not authenticated", %{conn: conn, secret_params: params} do
-      assert %{"errors" => errors} =
+    test "returns error if user not authenticated", %{conn: conn, params: params} do
+      assert response =
                conn
                |> post(Routes.vault_path(conn, :create, params))
                |> json_response(401)
 
-      assert %{"detail" => "unauthenticated"} = errors
+      assert %{"errors" => %{"detail" => "unauthenticated"}} == response
     end
 
-    test "returns error if invalid token is used", %{conn: conn, secret_params: params} do
-      assert %{"errors" => errors} =
+    test "returns error if invalid token is used", %{conn: conn, params: params} do
+      assert response =
                conn
                |> put_req_header("authorization", "Bearer invalid_token")
                |> post(Routes.vault_path(conn, :create, params))
                |> json_response(401)
 
-      assert %{"detail" => "invalid_token"} = errors
+      assert %{"errors" => %{"detail" => "invalid_token"}} == response
     end
 
     test "returns secret validation errors", %{conn: conn, user: user} do
       assert response =
                conn
                |> put_authorization(user)
-               |> post(Routes.vault_path(conn, :create, %{name: "website", username: "john"}))
+               |> post(Routes.vault_path(conn, :create, %{name: "website"}))
                |> json_response(422)
 
       assert %{
                "errors" => %{
+                 "username" => ["can't be blank"],
                  "password" => ["can't be blank"]
                }
-             } = response
+             } == response
     end
 
-    test "returns created secret", %{conn: conn, user: user, secret_params: params} do
+    test "returns created secret", %{conn: conn, user: user, params: params} do
       assert response =
                conn
                |> put_authorization(user)
@@ -155,6 +156,83 @@ defmodule SakaVaultWeb.VaultControllerTest do
                  "notes" => nil
                }
              } = response
+    end
+  end
+
+  describe "PATCH /update" do
+    test "returns error if user not authenticated", %{conn: conn, secret: secret} do
+      assert response =
+               conn
+               |> patch(Routes.vault_path(conn, :update, secret))
+               |> json_response(401)
+
+      assert %{"errors" => %{"detail" => "unauthenticated"}} == response
+    end
+
+    test "returns error if invalid token is used", %{conn: conn, secret: secret} do
+      assert response =
+               conn
+               |> put_req_header("authorization", "Bearer invalid_token")
+               |> patch(Routes.vault_path(conn, :update, secret))
+               |> json_response(401)
+
+      assert %{"errors" => %{"detail" => "invalid_token"}} == response
+    end
+
+    test "returns secret validation errors", %{conn: conn, user: user, secret: secret} do
+      assert response =
+               conn
+               |> put_authorization(user)
+               |> patch(Routes.vault_path(conn, :update, secret, %{name: ""}))
+               |> json_response(422)
+
+      assert %{"errors" => %{"name" => ["can't be blank"]}} == response
+    end
+
+    test "returns updated secret", %{conn: conn, user: user, secret: %{id: secret_id} = secret} do
+      assert response =
+               conn
+               |> put_authorization(user)
+               |> patch(Routes.vault_path(conn, :update, secret, %{name: "anotherWebsite"}))
+               |> json_response(200)
+
+      assert %{
+               "data" => %{
+                 "id" => ^secret_id,
+                 "name" => "anotherWebsite",
+               }
+             } = response
+    end
+  end
+
+  describe "DELETE /delete" do
+    test "returns error if user not authenticated", %{conn: conn, secret: secret} do
+      assert response =
+               conn
+               |> delete(Routes.vault_path(conn, :delete, secret))
+               |> json_response(401)
+
+      assert %{"errors" => %{"detail" => "unauthenticated"}} == response
+    end
+
+    test "returns error if invalid token is used", %{conn: conn, secret: secret} do
+      assert response =
+               conn
+               |> put_req_header("authorization", "Bearer invalid_token")
+               |> delete(Routes.vault_path(conn, :delete, secret))
+               |> json_response(401)
+
+      assert %{"errors" => %{"detail" => "invalid_token"}} == response
+    end
+
+    test "returns deleted secret id", %{conn: conn, user: user, secret: secret} do
+      assert response =
+               conn
+               |> put_authorization(user)
+               |> delete(Routes.vault_path(conn, :delete, secret))
+               |> json_response(200)
+
+      assert %{"data" => %{"deleted" => [secret.id]}} == response
     end
   end
 end
