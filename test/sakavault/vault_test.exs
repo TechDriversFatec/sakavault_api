@@ -42,11 +42,11 @@ defmodule SakaVault.VaultTest do
         password: "johndoe123"
       }
 
-      assert {:ok, %Secret{user_id: ^user_id}} = Vault.create(attrs, user)
+      assert {:ok, %Secret{user_id: ^user_id}} = Vault.create(user, attrs)
     end
 
     test "invalid data returns error changeset", %{user: user} do
-      assert {:error, %Ecto.Changeset{}} = Vault.create(%{name: "John Doe"}, user)
+      assert {:error, %Ecto.Changeset{}} = Vault.create(user, %{name: "John Doe"})
     end
   end
 

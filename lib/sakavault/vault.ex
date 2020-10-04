@@ -17,8 +17,9 @@ defmodule SakaVault.Vault do
 
   def find(id), do: {:ok, Repo.get(Secret, id)}
 
-  def create(attrs, %User{id: user_id}) do
+  def create(%User{id: user_id}, attrs) do
     attrs
+    |> atomize_keys()
     |> Map.put(:user_id, user_id)
     |> Secret.changeset()
     |> Repo.insert()
@@ -31,4 +32,14 @@ defmodule SakaVault.Vault do
   end
 
   def delete(secret), do: Repo.delete(secret)
+
+  defp atomize_keys(map) do
+    map
+    |> Enum.map(&atomize/1)
+    |> Enum.into(%{})
+  end
+
+  # sobelow_skip ["DOS"]
+  defp atomize({k, v}) when is_binary(k), do: {String.to_atom(k), v}
+  defp atomize({k, v}) when is_atom(k), do: {k, v}
 end
