@@ -42,7 +42,7 @@ config :sakavault, SakaVault.Guardian,
   issuer: "sakavault",
   secret_key: {:system, "GUARDIAN_SECRET_KEY"}
 
-config :sakavault, SakaVault.EncryptionKeys, keys: System.get_env("ENCRYPTION_KEYS")
+config :sakavault, SakaVault.EncryptionKeys, keys: {:system, "ENCRYPTION_KEYS"}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
