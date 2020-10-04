@@ -20,5 +20,7 @@ defmodule SakaVaultWeb.Router do
     get "/account", AccountController, :show
     # patch "/account", AccountController, :update
     # delete "/account", AccountController, :delete
+
+    resources "/secrets", VaultController, except: [:new, :edit]
   end
 end
