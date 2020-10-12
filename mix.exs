@@ -50,6 +50,11 @@ defmodule SakaVault.MixProject do
       # Auth
       {:guardian, "~> 2.1"},
 
+      # Aws
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_kms, "~> 2.1"},
+      {:hackney, "~> 1.9"},
+
       # Securely hashing & verifying passwords
       {:argon2_elixir, "~> 1.3"},
 
