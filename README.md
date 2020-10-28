@@ -28,4 +28,4 @@ Para iniciar seu servidor Phoenix:
   * Inicie o endpoint Phoenix com: `mix phx.server`
 
 
-Agora você pode visitar [`localhost:4000`](http://localhost:4000) eu sem navegador.
+Agora você pode visitar [`localhost:4000`](http://localhost:4000) eu seu navegador.
