@@ -4,14 +4,13 @@ defmodule SakaVault.Accounts.User do
   use SakaVault.Schema
 
   alias SakaVault.Fields.{
-    Encrypted,
     Hash,
     Password
   }
 
   schema "users" do
-    field :name, Encrypted
-    field :email, Encrypted
+    field :name, :binary
+    field :email, :binary
     field :email_hash, Hash
 
     field :password, :binary, virtual: true
