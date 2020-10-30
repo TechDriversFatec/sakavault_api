@@ -14,7 +14,10 @@ defmodule SakaVault.BaseCase do
         Changeset
       }
 
+      import Mox
       import SakaVault.Support.Factories
+
+      setup :verify_on_exit!
 
       setup tags do
         pid = Sandbox.start_owner!(SakaVault.Repo, shared: not tags[:async])
