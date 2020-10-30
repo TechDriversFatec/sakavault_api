@@ -27,7 +27,7 @@ defmodule SakaVault.MixProject do
   def application do
     [
       mod: {SakaVault.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :crypto]
     ]
   end
 
@@ -52,7 +52,7 @@ defmodule SakaVault.MixProject do
 
       # Aws
       {:ex_aws, "~> 2.1"},
-      {:ex_aws_kms, "~> 2.1"},
+      {:ex_aws_secretsmanager, "~> 2.0"},
       {:hackney, "~> 1.9"},
 
       # Securely hashing & verifying passwords
@@ -72,6 +72,7 @@ defmodule SakaVault.MixProject do
       {:telemetry_poller, "~> 0.4"},
 
       # Development and testing
+      {:mox, "~> 1.0", only: :test},
       {:faker, "~> 0.15", only: [:dev, :test]},
       {:ex_machina, "~> 2.4", only: [:dev, :test]},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
