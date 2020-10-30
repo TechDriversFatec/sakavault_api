@@ -2,45 +2,38 @@ defmodule SakaVault.AES do
   @moduledoc false
 
   # Use AES 256 Bit Keys for Encryption.
+  @mode :aes_gcm
   @aad "AES256GCM"
 
-  def encrypt(plain_text) do
-    # create random Initialisation Vector
+  def encrypt(plain_text, key) do
+    secret_key = :base64.decode(key)
     initial_vector = :crypto.strong_rand_bytes(16)
-
-    # get the *latest* key in the list of encryption keys
-    key = get_key()
-
-    # get the *latest* key id in the list of encryption keys
-    key_id = get_key_id()
 
     {cipher, tag} =
       :crypto.block_encrypt(
-        :aes_gcm,
-        key,
+        @mode,
+        secret_key,
         initial_vector,
         {@aad, to_string(plain_text), 16}
       )
 
-    initial_vector <> tag <> <<key_id::unsigned-big-integer-32>> <> cipher
+    initial_vector <> tag <> cipher
   end
 
-  def decrypt(cipher_text) do
+  def decrypt(cipher_text, key) do
+    secret_key = :base64.decode(key)
+
     <<
       initial_vector::binary-16,
       tag::binary-16,
-      key_id::unsigned-big-integer-32,
       cipher_text::binary
     >> = cipher_text
 
-    :crypto.block_decrypt(:aes_gcm, get_key(key_id), initial_vector, {@aad, cipher_text, tag})
+    :crypto.block_decrypt(
+      @mode,
+      secret_key,
+      initial_vector,
+      {@aad, cipher_text, tag}
+    )
   end
-
-  defp get_key, do: get_key_id() |> get_key()
-
-  defp get_key(key_id), do: encryption_keys() |> Enum.at(key_id)
-
-  defp get_key_id, do: Enum.count(encryption_keys()) - 1
-
-  defp encryption_keys, do: SakaVault.EncryptionKeys.get_keys()
 end

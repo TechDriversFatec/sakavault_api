@@ -11,13 +11,13 @@ defmodule SakaVault.Fields.Encrypted do
   end
 
   def dump(value) do
-    cipher_text = value |> to_string |> AES.encrypt()
+    cipher_text = value |> to_string |> AES.encrypt("key")
 
     {:ok, cipher_text}
   end
 
   def load(value) do
-    {:ok, AES.decrypt(value)}
+    {:ok, AES.decrypt(value, "key")}
   end
 
   def embed_as(_), do: :self

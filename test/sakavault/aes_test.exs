@@ -1,11 +1,15 @@
 defmodule SakaVault.AESTest do
   use SakaVault.DataCase
 
-  alias SakaVault.AES
+  alias SakaVault.{AES, Krypto}
+
+  setup do
+    %{key: Krypto.secret_key("sakavault")}
+  end
 
   describe ".encrypt/1" do
-    test "encrypt includes the random initial vector in the value" do
-      <<initial_vector::binary-16, cipher_text::binary>> = AES.encrypt("hello")
+    test "encrypt includes the random initial vector in the value", %{key: key} do
+      <<initial_vector::binary-16, cipher_text::binary>> = AES.encrypt("hello", key)
 
       assert is_binary(cipher_text)
 
@@ -13,30 +17,30 @@ defmodule SakaVault.AESTest do
       assert String.length(initial_vector) != 0
     end
 
-    test "encrypt does not produce the same ciphertext twice" do
-      assert AES.encrypt("hello") != AES.encrypt("hello")
+    test "encrypt doesn't produce the same cipher text twice", %{key: key} do
+      assert AES.encrypt("hello", key) != AES.encrypt("hello", key)
     end
   end
 
   describe "decrypt/1" do
-    test "decrypt cipher text that was encrypted with default key" do
-      plain_text = "hello" |> AES.encrypt() |> AES.decrypt()
+    test "decrypt cipher text", %{key: key} do
+      plain_text =
+        "hello"
+        |> AES.encrypt(key)
+        |> AES.decrypt(key)
 
       assert plain_text == "hello"
     end
 
-    test "can still decrypt the value after adding a new encryption key" do
-      encrypted_value = "hello" |> AES.encrypt()
+    test "can't decrypt value with another key", %{key: key} do
+      another_key = Krypto.secret_key("another key")
 
-      original_keys = Application.get_env(:sakavault, SakaVault.EncryptionKeys)[:keys]
+      plain_text =
+        "hello"
+        |> AES.encrypt(key)
+        |> AES.decrypt(another_key)
 
-      Application.put_env(:sakavault, SakaVault.EncryptionKeys,
-        keys: "#{original_keys},#{:base64.encode(:crypto.strong_rand_bytes(32))}"
-      )
-
-      assert "hello" == encrypted_value |> AES.decrypt()
-
-      Application.put_env(:sakavault, SakaVault.EncryptionKeys, keys: original_keys)
+      refute plain_text == "hello"
     end
   end
 end
