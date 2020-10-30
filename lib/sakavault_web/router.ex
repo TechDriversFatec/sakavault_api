@@ -1,6 +1,27 @@
 defmodule SakaVaultWeb.Router do
   use SakaVaultWeb, :router
 
+  pipeline :cors do
+    plug(Corsica,
+      origins: [
+        ~r{^https?:\/\/0.0.0.0:\d+$},
+        ~r{^https?:\/\/127.0.0.1:\d+$},
+        ~r{^https?:\/\/localhost:\d+$},
+        ~r{^https:\/\/sakavault\.netlify\.app/$}
+      ],
+      allow_headers: ~w(
+            authorization
+            content-type
+            access-control-allow-methods
+            access-control-allow-origin
+          ),
+      max_age: 86_400,
+      allow_credentials: true
+    )
+  end
+
+  pipe_through :cors
+
   pipeline :api do
     plug :accepts, ["json"]
   end
