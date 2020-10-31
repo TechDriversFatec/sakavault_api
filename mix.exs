@@ -49,6 +49,7 @@ defmodule SakaVault.MixProject do
 
       # Auth
       {:guardian, "~> 2.1"},
+      {:corsica, "~> 1.1"},
 
       # Aws
       {:ex_aws, "~> 2.1"},
