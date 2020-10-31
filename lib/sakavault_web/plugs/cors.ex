@@ -6,7 +6,7 @@ defmodule SakaVaultWeb.Plugs.CORS do
       ~r{^https?:\/\/0.0.0.0:\d+$},
       ~r{^https?:\/\/127.0.0.1:\d+$},
       ~r{^https?:\/\/localhost:\d+$},
-      ~r{^https:\/\/sakavault\.netlify\.app/$}
+      ~r{^https?:\/\/sakavault\.netlify\.app$}
     ],
     allow_headers: ~w(
       accept
