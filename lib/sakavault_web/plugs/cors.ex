@@ -16,5 +16,5 @@ defmodule SakaVaultWeb.Plugs.CORS do
     allow_credentials: true,
     max_age: 86_400
 
-  resource "/*"
+  resource("/*")
 end
