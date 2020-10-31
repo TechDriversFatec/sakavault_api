@@ -1,4 +1,6 @@
 defmodule SakaVaultWeb.Plugs.CORS do
+  @moduledoc false
+
   use Corsica.Router,
     origins: [
       ~r{^https?:\/\/0.0.0.0:\d+$},
