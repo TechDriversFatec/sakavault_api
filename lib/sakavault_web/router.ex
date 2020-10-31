@@ -10,6 +10,7 @@ defmodule SakaVaultWeb.Router do
         ~r{^https:\/\/sakavault\.netlify\.app/$}
       ],
       allow_headers: ~w(
+            accept
             authorization
             content-type
             access-control-allow-methods
