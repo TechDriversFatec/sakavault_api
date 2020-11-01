@@ -1,13 +1,13 @@
 defmodule SakaVault.Auth do
   @moduledoc false
 
-  alias SakaVault.{Accounts, Guardian}
+  alias SakaVault.{Accounts, Guardian, Krypto}
   alias SakaVault.Accounts.User
 
   def authenticate(%User{} = user) do
     {:ok, token, _} = Guardian.encode_and_sign(user, %{})
 
-    {:ok, %{token: token, user: Map.take(user, [:id, :name, :email])}}
+    {:ok, %{token: token, user: decrypt_user(user)}}
   end
 
   def authenticate(email, password) do
@@ -18,5 +18,11 @@ defmodule SakaVault.Auth do
       false -> {:error, :invalid_password}
       {:ok, nil} -> {:error, :not_found}
     end
+  end
+
+  defp decrypt_user(%User{} = user) do
+    user
+    |> Krypto.decrypt()
+    |> Map.take([:id, :name, :email])
   end
 end

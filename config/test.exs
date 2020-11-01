@@ -21,3 +21,5 @@ config :sakavault, SakaVaultWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :sakavault, :secrets, SakaVault.MockSecrets

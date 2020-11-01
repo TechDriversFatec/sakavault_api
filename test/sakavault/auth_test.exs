@@ -8,8 +8,9 @@ defmodule SakaVault.AuthTest do
   end
 
   describe "authenticate/1 with user" do
-    test "authenticate user", %{user: user} do
-      user_id = user.id
+    test "authenticate user", %{user: %{id: user_id} = user} do
+      secrets_mock_fetch()
+
       auth_user = Map.take(user, [:id, :name, :email])
 
       assert {:ok, %{token: token, user: ^auth_user}} = Auth.authenticate(user)
@@ -20,7 +21,9 @@ defmodule SakaVault.AuthTest do
 
   describe "authenticate/2" do
     test "authenticate user", %{user: user} do
-      assert {:ok, %{token: _, user: _}} = Auth.authenticate(user.email, user.name)
+      secrets_mock_fetch()
+
+      assert {:ok, %{token: _, user: _}} = Auth.authenticate(user.email, user.password)
     end
 
     test "invalid password", %{user: user} do

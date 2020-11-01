@@ -30,6 +30,8 @@ defmodule SakaVault.AccountsTest do
 
   describe "create/1" do
     test "with valid data creates a user" do
+      configure_secrets_mock()
+
       attrs = %{
         name: "John Doe",
         email: "john@doe.com",
@@ -38,7 +40,8 @@ defmodule SakaVault.AccountsTest do
 
       assert {:ok, %User{} = user} = Accounts.create(attrs)
 
-      assert user.name == "John Doe"
+      refute user.name == "John Doe"
+      refute user.email == "john@doe.com"
     end
 
     test "invalid data returns error changeset" do

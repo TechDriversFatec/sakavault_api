@@ -10,7 +10,9 @@ defmodule SakaVaultWeb.AuthControllerTest do
 
   describe "POST /login" do
     test "renders user when data is valid", %{conn: conn, user: user} do
-      params = %{email: user.email, password: user.name}
+      secrets_mock_fetch()
+
+      params = %{email: user.email, password: user.password}
 
       assert response =
                conn
@@ -54,6 +56,9 @@ defmodule SakaVaultWeb.AuthControllerTest do
 
   describe "POST /register" do
     test "renders user when data is valid", %{conn: conn} do
+      configure_secrets_mock()
+      secrets_mock_fetch()
+
       params = %{name: "John Doe", password: "johndoe123", email: "john@doe.com"}
 
       assert response =
