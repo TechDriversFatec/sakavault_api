@@ -1,8 +1,11 @@
 defmodule SakaVault.SecretsBehaviour do
+  @moduledoc false
+
   @callback list :: list()
 
-  @callback create_key(map()) :: {:ok, any()} | {:error, any()}
+  @callback fetch(binary()) :: {:ok, binary()} | {:error, any()}
+  @callback create(binary(), binary()) :: {:ok, any()} | {:error, any()}
 
-  @callback delete_key(map()) :: {:ok, any()} | {:error, any()}
-  @callback delete_key(binary()) :: {:ok, any()} | {:error, any()}
+  @callback delete(map()) :: {:ok, any()} | {:error, any()}
+  @callback delete(binary()) :: {:ok, any()} | {:error, any()}
 end
