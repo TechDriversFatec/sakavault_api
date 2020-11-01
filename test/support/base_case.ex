@@ -16,6 +16,8 @@ defmodule SakaVault.BaseCase do
 
       import Mox
       import SakaVault.Support.Factories
+      import SakaVault.Support.FileHelpers
+      import SakaVault.Support.MockHelpers
 
       setup :verify_on_exit!
 
