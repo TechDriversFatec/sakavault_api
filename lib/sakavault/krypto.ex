@@ -11,8 +11,7 @@ defmodule SakaVault.Krypto do
 
   def decrypt(%{__struct__: schema} = struct) do
     fields = get_fields(schema)
-
-    {:ok, secret_key} = get_secret_key(schema, struct)
+    secret_key = get_secret_key(schema, struct)
 
     Enum.reduce(fields, struct, fn field, acc_struct ->
       decrypted_value =
@@ -26,15 +25,14 @@ defmodule SakaVault.Krypto do
 
   def encrypt(%{valid?: false} = changeset), do: changeset
 
-  def encrypt(%{data: %{__struct__: schema}, changes: changes} = changeset) do
+  def encrypt(%{data: %{__struct__: schema} = data, changes: changes} = changeset) do
     fields = get_fields(schema)
-
-    {:ok, secret_key} = get_secret_key(schema, changes)
+    secret_key = get_secret_key(schema, changes) || get_secret_key(schema, data)
 
     Enum.reduce(fields, changeset, fn field, acc_changeset ->
       encrypted_value =
         changeset
-        |> Changeset.get_change(field)
+        |> Changeset.get_field(field)
         |> encrypt_value(secret_key)
 
       Changeset.put_change(acc_changeset, field, encrypted_value)
@@ -42,15 +40,18 @@ defmodule SakaVault.Krypto do
   end
 
   defp get_secret_key(User, %{id: user_id}), do: get_secret_key(user_id)
-  defp get_secret_key(User, changes), do: get_secret_key(changes)
+  defp get_secret_key(User, map), do: get_secret_key(map)
 
   defp get_secret_key(_not_user, %{user_id: user_id}), do: get_secret_key(user_id)
-  defp get_secret_key(_not_user, _user_id), do: {:error, :error}
+  defp get_secret_key(_not_user, _user_id), do: nil
 
   defp get_secret_key(user) when is_map(user) do
-    user
-    |> secret_id()
-    |> Secrets.fetch()
+    {:ok, secret_key} =
+      user
+      |> secret_id()
+      |> Secrets.fetch()
+
+    secret_key
   end
 
   defp get_secret_key(user_id) when is_binary(user_id) do
