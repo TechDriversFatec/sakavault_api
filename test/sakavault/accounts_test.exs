@@ -30,8 +30,6 @@ defmodule SakaVault.AccountsTest do
 
   describe "create/1" do
     test "with valid data creates a user" do
-      configure_secrets_mock()
-
       attrs = %{
         name: "John Doe",
         email: "john@doe.com",

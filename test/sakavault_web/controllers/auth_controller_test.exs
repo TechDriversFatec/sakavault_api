@@ -1,13 +1,9 @@
 defmodule SakaVaultWeb.AuthControllerTest do
   use SakaVaultWeb.ConnCase
 
-  alias SakaVault.{Accounts, Krypto, MockSecretsAPI}
+  alias SakaVault.{Accounts, Krypto}
 
   setup %{conn: conn} do
-    MockSecretsAPI
-    |> stub(:fetch, fn _ -> load_json("fetch_secret") end)
-    |> stub(:create, fn _, _ -> load_json("create_secret") end)
-
     {:ok, user} =
       :user
       |> params_for()

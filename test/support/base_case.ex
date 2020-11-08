@@ -17,9 +17,17 @@ defmodule SakaVault.BaseCase do
       import Mox
       import SakaVault.Support.Factories
       import SakaVault.Support.FileHelpers
-      import SakaVault.Support.MockHelpers
 
       setup :verify_on_exit!
+      setup :stub_secrets_api!
+
+      defp stub_secrets_api!(context \\ %{}) do
+        SakaVault.MockSecretsAPI
+        |> Mox.stub(:fetch, fn _ -> load_json("fetch_secret") end)
+        |> Mox.stub(:create, fn _, _ -> load_json("create_secret") end)
+
+        context
+      end
 
       setup tags do
         pid = Sandbox.start_owner!(SakaVault.Repo, shared: not tags[:async])

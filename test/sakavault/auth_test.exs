@@ -1,13 +1,9 @@
 defmodule SakaVault.AuthTest do
   use SakaVault.DataCase
 
-  alias SakaVault.{Accounts, Auth, Guardian, Krypto, MockSecretsAPI}
+  alias SakaVault.{Accounts, Auth, Guardian, Krypto}
 
   setup do
-    MockSecretsAPI
-    |> stub(:fetch, fn _ -> load_json("fetch_secret") end)
-    |> stub(:create, fn _, _ -> load_json("create_secret") end)
-
     {:ok, user} =
       :user
       |> params_for()

@@ -22,8 +22,6 @@ defmodule SakaVault.GuardianTest do
 
   describe "resource_from_claims/2" do
     test "with valid claims" do
-      configure_secrets_mock()
-
       {:ok, %{id: user_id} = user} =
         Accounts.create(%{
           name: "John Doe",

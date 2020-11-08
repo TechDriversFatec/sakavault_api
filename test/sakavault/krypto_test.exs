@@ -55,8 +55,6 @@ defmodule SakaVault.KryptoTest do
     end
 
     test "encrypt changeset with valid attributes" do
-      secrets_mock_fetch()
-
       assert {:ok, %User{} = user} =
                @valid_attrs
                |> User.changeset()
@@ -70,15 +68,11 @@ defmodule SakaVault.KryptoTest do
 
   describe "decrypt" do
     test "user from database" do
-      secrets_mock_fetch()
-
       assert {:ok, %User{id: user_id}} =
                @valid_attrs
                |> User.changeset()
                |> Krypto.encrypt()
                |> Repo.insert()
-
-      secrets_mock_fetch()
 
       user =
         User
