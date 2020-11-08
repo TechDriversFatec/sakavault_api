@@ -1,18 +1,36 @@
 defmodule SakaVaultWeb.AuthControllerTest do
   use SakaVaultWeb.ConnCase
 
+  alias SakaVault.{Accounts, Krypto, MockSecretsAPI}
+
   setup %{conn: conn} do
+    MockSecretsAPI
+    |> stub(:fetch, fn _ -> load_json("fetch_secret") end)
+    |> stub(:create, fn _, _ -> load_json("create_secret") end)
+
+    {:ok, user} =
+      :user
+      |> params_for()
+      |> Accounts.create()
+
+    user_email =
+      user
+      |> Krypto.decrypt()
+      |> Map.get(:email)
+
     {
       :ok,
-      conn: put_req_header(conn, "accept", "application/json"), user: insert(:user)
+      user: user, user_email: user_email, conn: put_req_header(conn, "accept", "application/json")
     }
   end
 
   describe "POST /login" do
-    test "renders user when data is valid", %{conn: conn, user: user} do
-      secrets_mock_fetch()
-
-      params = %{email: user.email, password: user.password}
+    test "renders user when data is valid", %{
+      conn: conn,
+      user: %{id: user_id},
+      user_email: user_email
+    } do
+      params = %{email: user_email, password: "password1234"}
 
       assert response =
                conn
@@ -22,13 +40,10 @@ defmodule SakaVaultWeb.AuthControllerTest do
       assert %{
                "token" => _,
                "user" => %{
-                 "id" => user_id,
-                 "name" => user_name,
-                 "email" => user_email
+                 "id" => ^user_id,
+                 "email" => ^user_email
                }
              } = response
-
-      assert %{id: ^user_id, name: ^user_name, email: ^user_email} = user
     end
 
     test "when user not found", %{conn: conn} do
@@ -42,8 +57,8 @@ defmodule SakaVaultWeb.AuthControllerTest do
       assert %{"detail" => "Not Found"} = errors
     end
 
-    test "when invalid password not found", %{conn: conn, user: user} do
-      params = %{email: user.email, password: "invalidpass"}
+    test "when invalid password not found", %{conn: conn, user_email: user_email} do
+      params = %{email: user_email, password: "invalidpass"}
 
       assert %{"errors" => errors} =
                conn
@@ -56,9 +71,6 @@ defmodule SakaVaultWeb.AuthControllerTest do
 
   describe "POST /register" do
     test "renders user when data is valid", %{conn: conn} do
-      configure_secrets_mock()
-      secrets_mock_fetch()
-
       params = %{name: "John Doe", password: "johndoe123", email: "john@doe.com"}
 
       assert response =

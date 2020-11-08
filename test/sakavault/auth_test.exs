@@ -1,17 +1,32 @@
 defmodule SakaVault.AuthTest do
   use SakaVault.DataCase
 
-  alias SakaVault.{Auth, Guardian}
+  alias SakaVault.{Accounts, Auth, Guardian, Krypto, MockSecretsAPI}
 
   setup do
-    {:ok, user: insert(:user)}
+    MockSecretsAPI
+    |> stub(:fetch, fn _ -> load_json("fetch_secret") end)
+    |> stub(:create, fn _, _ -> load_json("create_secret") end)
+
+    {:ok, user} =
+      :user
+      |> params_for()
+      |> Accounts.create()
+
+    email =
+      user
+      |> Krypto.decrypt()
+      |> Map.get(:email)
+
+    {:ok, user: user, email: email}
   end
 
   describe "authenticate/1 with user" do
     test "authenticate user", %{user: %{id: user_id} = user} do
-      secrets_mock_fetch()
-
-      auth_user = Map.take(user, [:id, :name, :email])
+      auth_user =
+        user
+        |> Krypto.decrypt()
+        |> Map.take([:id, :name, :email])
 
       assert {:ok, %{token: token, user: ^auth_user}} = Auth.authenticate(user)
 
@@ -20,14 +35,12 @@ defmodule SakaVault.AuthTest do
   end
 
   describe "authenticate/2" do
-    test "authenticate user", %{user: user} do
-      secrets_mock_fetch()
-
-      assert {:ok, %{token: _, user: _}} = Auth.authenticate(user.email, user.password)
+    test "authenticate user", %{email: email} do
+      assert {:ok, %{token: _, user: _}} = Auth.authenticate(email, "password1234")
     end
 
-    test "invalid password", %{user: user} do
-      assert {:error, :invalid_password} = Auth.authenticate(user.email, "invalidpass")
+    test "invalid password", %{email: email} do
+      assert {:error, :invalid_password} = Auth.authenticate(email, "invalidpass")
     end
 
     test "user not found" do
