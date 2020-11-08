@@ -42,8 +42,6 @@ config :sakavault, SakaVault.Guardian,
   issuer: "sakavault",
   secret_key: {:system, "GUARDIAN_SECRET_KEY"}
 
-config :sakavault, SakaVault.EncryptionKeys, keys: {:system, "ENCRYPTION_KEYS"}
-
 config :ex_aws,
   json_codec: Jason,
   region: "sa-east-1",
