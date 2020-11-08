@@ -44,6 +44,14 @@ config :sakavault, SakaVault.Guardian,
 
 config :sakavault, SakaVault.EncryptionKeys, keys: {:system, "ENCRYPTION_KEYS"}
 
+config :ex_aws,
+  json_codec: Jason,
+  region: "sa-east-1",
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role]
+
+config :sakavault, :secrets_api, SakaVault.SecretsAPI
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
