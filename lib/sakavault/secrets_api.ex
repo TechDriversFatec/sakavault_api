@@ -30,7 +30,6 @@ defmodule SakaVault.SecretsAPI do
 
   def delete(secret_id) do
     secret_id
-    |> secret_name()
     |> SecretsManager.delete_secret()
     |> ExAws.request()
   end
