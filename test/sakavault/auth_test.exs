@@ -19,12 +19,7 @@ defmodule SakaVault.AuthTest do
 
   describe "authenticate/1 with user" do
     test "authenticate user", %{user: %{id: user_id} = user} do
-      auth_user =
-        user
-        |> Krypto.decrypt()
-        |> Map.take([:id, :name, :email])
-
-      assert {:ok, %{token: token, user: ^auth_user}} = Auth.authenticate(user)
+      assert {:ok, %{token: token, user: ^user}} = Auth.authenticate(user)
 
       assert {:ok, %{"sub" => ^user_id}} = Guardian.decode_and_verify(token)
     end
