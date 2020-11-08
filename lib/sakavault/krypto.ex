@@ -5,24 +5,14 @@ defmodule SakaVault.Krypto do
   @ignorable_field_regex ~r/(_id|_hash)$/
 
   alias Ecto.Changeset
+
+  alias SakaVault.Accounts.User
   alias SakaVault.{Accounts, AES, Secrets}
 
-  def decrypt(struct) do
-    {:ok, user} =
-      struct
-      |> Map.get(:user_id)
-      |> case do
-        nil -> Map.get(struct, :id)
-        user_id -> user_id
-      end
-      |> Accounts.find()
+  def decrypt(%{__struct__: schema} = struct) do
+    fields = get_fields(schema)
 
-    {:ok, secret_key} =
-      user
-      |> secret_id()
-      |> Secrets.fetch()
-
-    fields = get_fields(struct)
+    {:ok, secret_key} = get_secret_key(schema, struct)
 
     Enum.reduce(fields, struct, fn field, acc_struct ->
       decrypted_value =
@@ -36,13 +26,10 @@ defmodule SakaVault.Krypto do
 
   def encrypt(%{valid?: false} = changeset), do: changeset
 
-  def encrypt(%{data: data, changes: changes} = changeset) do
-    fields = get_fields(data)
+  def encrypt(%{data: %{__struct__: schema}, changes: changes} = changeset) do
+    fields = get_fields(schema)
 
-    {:ok, secret_key} =
-      changes
-      |> secret_id()
-      |> Secrets.fetch()
+    {:ok, secret_key} = get_secret_key(schema, changes)
 
     Enum.reduce(fields, changeset, fn field, acc_changeset ->
       encrypted_value =
@@ -53,6 +40,26 @@ defmodule SakaVault.Krypto do
       Changeset.put_change(acc_changeset, field, encrypted_value)
     end)
   end
+
+  defp get_secret_key(User, %{id: user_id}), do: get_secret_key(user_id)
+  defp get_secret_key(User, changes), do: get_secret_key(changes)
+
+  defp get_secret_key(_not_user, %{user_id: user_id}), do: get_secret_key(user_id)
+  defp get_secret_key(_not_user, _user_id), do: {:error, :error}
+
+  defp get_secret_key(user) when is_map(user) do
+    user
+    |> secret_id()
+    |> Secrets.fetch()
+  end
+
+  defp get_secret_key(user_id) when is_binary(user_id) do
+    user_id
+    |> Accounts.find()
+    |> get_secret_key()
+  end
+
+  defp get_secret_key({:ok, user}), do: get_secret_key(user)
 
   defp decrypt_value(nil, _), do: nil
   defp decrypt_value(value, key), do: AES.decrypt(value, key)
@@ -66,7 +73,7 @@ defmodule SakaVault.Krypto do
     Argon2.Base.hash_password(password, Argon2.gen_salt(), argon2_type: 2)
   end
 
-  defp get_fields(%{__struct__: schema}) do
+  defp get_fields(schema) do
     :fields
     |> schema.__schema__()
     |> Enum.reject(&ignorable_field/1)

@@ -2,24 +2,32 @@ defmodule SakaVault.KryptoTest do
   use SakaVault.DataCase
 
   alias SakaVault.Accounts.User
+  alias SakaVault.Vault.Secret
+
   alias SakaVault.{Krypto, Repo}
 
-  @valid_attrs %{
+  @valid_user_attrs %{
     name: "Max",
     email: "max@example.com",
     password: "NoCarbsBeforeMarbs"
   }
 
+  @valid_secret_attrs %{
+    name: "mysecret",
+    username: "myusername",
+    password: "mypassword"
+  }
+
   describe "secret_id" do
     test "always produces the same secret_id for the same user" do
-      %{changes: user} = User.changeset(@valid_attrs)
+      %{changes: user} = User.changeset(@valid_user_attrs)
 
       assert Krypto.secret_id(user) == Krypto.secret_id(user)
     end
 
     test "never produces the same secret_id for different users" do
-      %{changes: user1} = User.changeset(%{@valid_attrs | password: "nopass123"})
-      %{changes: user2} = User.changeset(%{@valid_attrs | password: "nopass100"})
+      %{changes: user1} = User.changeset(%{@valid_user_attrs | password: "nopass123"})
+      %{changes: user2} = User.changeset(%{@valid_user_attrs | password: "nopass100"})
 
       refute Krypto.secret_id(user1) == Krypto.secret_id(user2)
     end
@@ -46,7 +54,7 @@ defmodule SakaVault.KryptoTest do
   end
 
   describe "encrypt" do
-    test "return raw changeset when invalid" do
+    test "return raw changeset when user is invalid" do
       assert {:error, %Ecto.Changeset{} = user} =
                %{}
                |> User.changeset()
@@ -54,22 +62,45 @@ defmodule SakaVault.KryptoTest do
                |> Repo.insert()
     end
 
-    test "encrypt changeset with valid attributes" do
+    test "return raw changeset when secret is invalid" do
+      assert {:error, %Ecto.Changeset{} = secret} =
+               %{}
+               |> Secret.changeset()
+               |> Krypto.encrypt()
+               |> Repo.insert()
+    end
+
+    test "encrypt user changeset with valid attributes" do
       assert {:ok, %User{} = user} =
-               @valid_attrs
+               @valid_user_attrs
                |> User.changeset()
                |> Krypto.encrypt()
                |> Repo.insert()
 
-      refute user.name == @valid_attrs[:name]
-      refute user.email == @valid_attrs[:email]
+      refute user.name == @valid_user_attrs[:name]
+      refute user.email == @valid_user_attrs[:email]
+    end
+
+    test "encrypt secret changeset with valid attributes" do
+      user = insert(:user)
+
+      assert {:ok, %Secret{} = secret} =
+               @valid_secret_attrs
+               |> Map.merge(%{user_id: user.id})
+               |> Secret.changeset()
+               |> Krypto.encrypt()
+               |> Repo.insert()
+
+      refute secret.name == @valid_secret_attrs[:name]
+      refute secret.username == @valid_secret_attrs[:username]
+      refute secret.password == @valid_secret_attrs[:password]
     end
   end
 
   describe "decrypt" do
     test "user from database" do
       assert {:ok, %User{id: user_id}} =
-               @valid_attrs
+               @valid_user_attrs
                |> User.changeset()
                |> Krypto.encrypt()
                |> Repo.insert()
@@ -79,8 +110,28 @@ defmodule SakaVault.KryptoTest do
         |> Repo.get(user_id)
         |> Krypto.decrypt()
 
-      assert user.name == @valid_attrs[:name]
-      assert user.email == @valid_attrs[:email]
+      assert user.name == @valid_user_attrs[:name]
+      assert user.email == @valid_user_attrs[:email]
+    end
+
+    test "secret from database" do
+      user = insert(:user)
+
+      assert {:ok, %Secret{id: secret_id}} =
+               @valid_secret_attrs
+               |> Map.merge(%{user_id: user.id})
+               |> Secret.changeset()
+               |> Krypto.encrypt()
+               |> Repo.insert()
+
+      secret =
+        Secret
+        |> Repo.get(secret_id)
+        |> Krypto.decrypt()
+
+      assert secret.name == @valid_secret_attrs[:name]
+      assert secret.username == @valid_secret_attrs[:username]
+      assert secret.password == @valid_secret_attrs[:password]
     end
   end
 end
