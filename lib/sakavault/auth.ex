@@ -1,7 +1,7 @@
 defmodule SakaVault.Auth do
   @moduledoc false
 
-  alias SakaVault.{Accounts, Guardian, Krypto}
+  alias SakaVault.{Accounts, Guardian}
   alias SakaVault.Accounts.User
 
   def authenticate(%User{} = user) do
