@@ -1,13 +1,18 @@
 defmodule SakaVaultWeb.VaultControllerTest do
   use SakaVaultWeb.ConnCase
 
+  alias SakaVault.{Accounts, Vault}
   alias SakaVault.Vault.Secret
 
   setup %{conn: conn} do
-    user = insert(:user)
+    {:ok, user} =
+      :user
+      |> params_for()
+      |> Accounts.create()
 
-    secret = insert(:secret, user: user)
     params = %{name: "website", username: "john@doe.com", password: "johndoe123"}
+
+    {:ok, secret} = Vault.create(user, params)
 
     {
       :ok,
@@ -43,7 +48,7 @@ defmodule SakaVaultWeb.VaultControllerTest do
       user: user,
       secret: %{id: secret1_id}
     } do
-      %{id: secret2_id} = insert(:secret, user: user)
+      {:ok, %{id: secret2_id}} = Vault.create(user, params_for(:secret))
 
       assert response =
                conn

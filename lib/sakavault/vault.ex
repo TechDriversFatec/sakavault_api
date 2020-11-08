@@ -3,6 +3,7 @@ defmodule SakaVault.Vault do
 
   alias SakaVault.{
     Accounts.User,
+    Krypto,
     Repo,
     Vault.Secret
   }
@@ -22,12 +23,14 @@ defmodule SakaVault.Vault do
     |> atomize_keys()
     |> Map.put(:user_id, user_id)
     |> Secret.changeset()
+    |> Krypto.encrypt()
     |> Repo.insert()
   end
 
   def update(secret, attrs) do
     secret
     |> Secret.changeset(attrs)
+    |> Krypto.encrypt()
     |> Repo.update()
   end
 

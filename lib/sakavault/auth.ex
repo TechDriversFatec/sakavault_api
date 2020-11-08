@@ -7,7 +7,7 @@ defmodule SakaVault.Auth do
   def authenticate(%User{} = user) do
     {:ok, token, _} = Guardian.encode_and_sign(user, %{})
 
-    {:ok, %{token: token, user: Map.take(user, [:id, :name, :email])}}
+    {:ok, %{token: token, user: user}}
   end
 
   def authenticate(email, password) do

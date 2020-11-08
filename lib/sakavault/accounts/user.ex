@@ -3,19 +3,16 @@ defmodule SakaVault.Accounts.User do
 
   use SakaVault.Schema
 
-  alias SakaVault.Fields.{
-    Encrypted,
-    Hash,
-    Password
-  }
+  alias SakaVault.Krypto
 
   schema "users" do
-    field :name, Encrypted
-    field :email, Encrypted
-    field :email_hash, Hash
+    field :name, :binary
+    field :email, :binary
+
+    field :email_hash, :binary
+    field :password_hash, :binary
 
     field :password, :binary, virtual: true
-    field :password_hash, Password
 
     timestamps()
   end
@@ -30,13 +27,13 @@ defmodule SakaVault.Accounts.User do
   end
 
   defp add_email_hash(%{changes: %{email: email}} = changeset) do
-    put_change(changeset, :email_hash, email)
+    put_change(changeset, :email_hash, Krypto.hash_value(email))
   end
 
   defp add_email_hash(changeset), do: changeset
 
   defp add_password_hash(%{changes: %{password: password}} = changeset) do
-    put_change(changeset, :password_hash, password)
+    put_change(changeset, :password_hash, Krypto.password_value(password))
   end
 
   defp add_password_hash(changeset), do: changeset

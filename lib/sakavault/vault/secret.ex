@@ -4,13 +4,12 @@ defmodule SakaVault.Vault.Secret do
   use SakaVault.Schema
 
   alias SakaVault.Accounts.User
-  alias SakaVault.Fields.Encrypted
 
   schema "secrets" do
-    field :name, Encrypted
-    field :notes, Encrypted
-    field :username, Encrypted
-    field :password, Encrypted
+    field :name, :binary
+    field :notes, :binary
+    field :username, :binary
+    field :password, :binary
 
     belongs_to :user, User
 

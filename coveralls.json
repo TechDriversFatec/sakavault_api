@@ -23,6 +23,7 @@
   "skip_files": [
     "lib/sakavault.ex",
     "lib/sakavault/repo.ex",
+    "lib/sakavault/secrets_api.ex",
     "lib/sakavault/application.ex",
     "lib/sakavault/release_tasks.ex",
 
