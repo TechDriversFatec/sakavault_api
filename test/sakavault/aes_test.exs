@@ -20,6 +20,14 @@ defmodule SakaVault.AESTest do
     test "encrypt doesn't produce the same cipher text twice", %{key: key} do
       assert AES.encrypt("hello", key) != AES.encrypt("hello", key)
     end
+
+    test "reencrypt encrypted text", %{key: key} do
+      encrypted_text = AES.encrypt("hello", key)
+      reencrypted_text = AES.encrypt(encrypted_text, key)
+
+      refute reencrypted_text == "hello"
+      refute reencrypted_text == encrypted_text
+    end
   end
 
   describe "decrypt/1" do
@@ -30,6 +38,10 @@ defmodule SakaVault.AESTest do
         |> AES.decrypt(key)
 
       assert plain_text == "hello"
+    end
+
+    test "do not try to decrypt plain text", %{key: key} do
+      assert AES.decrypt("hello", key) == "hello"
     end
 
     test "can't decrypt value with another key", %{key: key} do
