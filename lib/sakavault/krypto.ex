@@ -5,8 +5,7 @@ defmodule SakaVault.Krypto do
   @ignorable_field_regex ~r/(_id|_hash)$/
 
   alias Ecto.Changeset
-  alias SakaVault.Accounts
-  alias SakaVault.AES
+  alias SakaVault.{Accounts, AES, Secrets}
 
   def decrypt(struct) do
     {:ok, user} =
@@ -21,7 +20,7 @@ defmodule SakaVault.Krypto do
     {:ok, secret_key} =
       user
       |> secret_id()
-      |> secrets().fetch()
+      |> Secrets.fetch()
 
     fields = get_fields(struct)
 
@@ -43,7 +42,7 @@ defmodule SakaVault.Krypto do
     {:ok, secret_key} =
       changes
       |> secret_id()
-      |> secrets().fetch()
+      |> Secrets.fetch()
 
     Enum.reduce(fields, changeset, fn field, acc_changeset ->
       encrypted_value =
@@ -104,9 +103,5 @@ defmodule SakaVault.Krypto do
     :sakavault
     |> Application.get_env(SakaVaultWeb.Endpoint)
     |> Keyword.get(:secret_key_base)
-  end
-
-  defp secrets do
-    Application.get_env(:sakavault, :secrets)
   end
 end

@@ -2,7 +2,7 @@ defmodule SakaVault.Accounts do
   @moduledoc false
 
   alias SakaVault.Accounts.User
-  alias SakaVault.{Krypto, Repo}
+  alias SakaVault.{Krypto, Repo, Secrets}
 
   def find(id) do
     {:ok, Repo.get(User, id)}
@@ -22,8 +22,6 @@ defmodule SakaVault.Accounts do
     |> Repo.insert()
   end
 
-  def process_request(request), do: request
-
   defp create_secret(%{valid?: false} = changeset), do: changeset
 
   defp create_secret(%{changes: user} = changeset) do
@@ -38,12 +36,8 @@ defmodule SakaVault.Accounts do
       |> Krypto.salt()
       |> Krypto.secret_key()
 
-    with {:ok, _} <- secrets().create(secret_id, secret_key) do
+    with {:ok, _} <- Secrets.create(secret_id, secret_key) do
       changeset
     end
-  end
-
-  defp secrets do
-    Application.get_env(:sakavault, :secrets)
   end
 end
