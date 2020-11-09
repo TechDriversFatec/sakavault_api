@@ -18,8 +18,7 @@ defmodule SakaVaultWeb.Router do
     pipe_through :auth
 
     get "/account", AccountController, :show
-    # patch "/account", AccountController, :update
-    # delete "/account", AccountController, :delete
+    delete "/account", AccountController, :delete
 
     resources "/secrets", VaultController, except: [:new, :edit]
   end
