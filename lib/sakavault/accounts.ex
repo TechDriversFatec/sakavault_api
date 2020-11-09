@@ -22,6 +22,12 @@ defmodule SakaVault.Accounts do
     |> Repo.insert()
   end
 
+  def delete(%User{} = user) do
+    user
+    |> delete_secret()
+    |> Repo.delete()
+  end
+
   defp create_secret(%{valid?: false} = changeset), do: changeset
 
   defp create_secret(%{changes: user} = changeset) do
@@ -39,5 +45,13 @@ defmodule SakaVault.Accounts do
     with {:ok, _} <- Secrets.create(secret_id, secret_key) do
       changeset
     end
+  end
+
+  defp delete_secret(%User{} = user) do
+    user
+    |> Krypto.secret_id()
+    |> Secrets.delete()
+
+    user
   end
 end

@@ -3,6 +3,8 @@ defmodule SakaVaultWeb.AccountController do
 
   action_fallback SakaVaultWeb.FallbackController
 
+  alias SakaVault.Accounts
+
   def action(conn, _) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -14,6 +16,15 @@ defmodule SakaVaultWeb.AccountController do
   end
 
   def show(conn, _params, user) do
+    case user do
+      nil -> {:error, :not_found}
+      user -> render(conn, "account.json", user: user)
+    end
+  end
+
+  def delete(conn, _params, user) do
+    {:ok, user} = Accounts.delete(user)
+
     render(conn, "account.json", user: user)
   end
 end

@@ -24,6 +24,7 @@ defmodule SakaVault.BaseCase do
       defp stub_secrets_api!(context \\ %{}) do
         SakaVault.MockSecretsAPI
         |> Mox.stub(:fetch, fn _ -> load_json("fetch_secret") end)
+        |> Mox.stub(:delete, fn _ -> load_json("delete_secret") end)
         |> Mox.stub(:create, fn _, _ -> load_json("create_secret") end)
 
         context

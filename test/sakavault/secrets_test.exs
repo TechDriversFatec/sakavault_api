@@ -19,6 +19,18 @@ defmodule SakaVault.SecretsTest do
 
       assert {:ok, _} = Secrets.fetch("secret_id")
     end
+
+    test "deleted secret" do
+      expect(MockSecretsAPI, :fetch, fn _ -> {:error, {:http_error, 400, "xpto"}} end)
+
+      assert {:error, :not_found} = Secrets.fetch("secret_id")
+    end
+
+    test "another error" do
+      expect(MockSecretsAPI, :fetch, fn _ -> {:error, {:http_error, 404, "original error"}} end)
+
+      assert {:error, {:http_error, 404, "original error"}} = Secrets.fetch("secret_id")
+    end
   end
 
   describe "delete" do

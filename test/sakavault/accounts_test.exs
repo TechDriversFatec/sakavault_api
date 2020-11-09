@@ -46,4 +46,11 @@ defmodule SakaVault.AccountsTest do
       assert {:error, %Ecto.Changeset{}} = Accounts.create(%{name: "John Doe"})
     end
   end
+
+  describe "delete/1" do
+    test "user", %{user: user} do
+      assert {:ok, user} = Accounts.delete(user)
+      assert {:ok, nil} = Accounts.find(user.id)
+    end
+  end
 end
