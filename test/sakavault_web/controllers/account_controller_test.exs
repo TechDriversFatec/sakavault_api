@@ -1,14 +1,18 @@
 defmodule SakaVaultWeb.AccountControllerTest do
   use SakaVaultWeb.ConnCase
 
+  alias SakaVault.{Accounts, Krypto}
+
   setup %{conn: conn} do
-    {
-      :ok,
-      conn: put_req_header(conn, "accept", "application/json"), user: insert(:user)
-    }
+    {:ok, user} =
+      :user
+      |> params_for()
+      |> Accounts.create()
+
+    {:ok, user: user, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  describe "GET /show" do
+  describe "GET /account" do
     test "returns error if user not authenticated", %{conn: conn} do
       assert %{"errors" => errors} =
                conn
@@ -35,15 +39,17 @@ defmodule SakaVaultWeb.AccountControllerTest do
                |> get(Routes.account_path(conn, :show))
                |> json_response(200)
 
+      decrypted_user = Krypto.decrypt(user)
+
       assert %{
-               "id" => user.id,
-               "name" => user.name,
-               "email" => user.email
+               "id" => decrypted_user.id,
+               "name" => decrypted_user.name,
+               "email" => decrypted_user.email
              } == response
     end
   end
 
-  describe "DELETE /delete" do
+  describe "DELETE /account" do
     test "returns error if user not authenticated", %{conn: conn} do
       assert %{"errors" => errors} =
                conn
